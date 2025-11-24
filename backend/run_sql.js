@@ -4,7 +4,7 @@ const path = require('path');
 
 async function runSql() {
   try {
-    const sqlPath = path.join(__dirname, 'create_missing_tables.sql');
+    const sqlPath = path.join(__dirname, 'fix_code_length.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
     
     console.log('Executing SQL...');

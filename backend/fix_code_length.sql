@@ -1,0 +1,1 @@
+ALTER TABLE maintenance_orders ALTER COLUMN code TYPE VARCHAR(50);
