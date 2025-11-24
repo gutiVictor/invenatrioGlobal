@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProductList from './pages/Products/ProductList';
 import ProductForm from './pages/Products/ProductForm';
+import ProductDetail from './pages/Products/ProductDetail';
 import CategoryList from './pages/Categories/CategoryList';
 import CategoryForm from './pages/Categories/CategoryForm';
 import SupplierList from './pages/Suppliers/SupplierList';
@@ -48,6 +49,7 @@ function App() {
                         <Route index element={<Dashboard />} />
                         <Route path="products" element={<ProductList />} />
                         <Route path="products/new" element={<ProductForm />} />
+                        <Route path="products/:id" element={<ProductDetail />} />
                         <Route path="products/edit/:id" element={<ProductForm />} />
                         <Route path="categories" element={<CategoryList />} />
                         <Route path="categories/new" element={<CategoryForm />} />

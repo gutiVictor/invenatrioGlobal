@@ -1,4 +1,5 @@
-import { Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ProductTable = ({ products, onEdit, onDelete }) => {
     return (
@@ -44,7 +45,9 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                         )}
                                     </div>
                                     <div className="ml-4">
-                                        <div className="text-sm font-medium text-secondary-900">{product.name}</div>
+                                        <Link to={`/products/${product.id}`} className="text-sm font-medium text-secondary-900 hover:text-primary-600">
+                                            {product.name}
+                                        </Link>
                                         {(product.brand || product.model) && (
                                             <div className="text-xs text-secondary-500">
                                                 {product.brand} {product.model}
