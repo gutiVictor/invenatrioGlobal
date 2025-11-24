@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probar API - Sistema de Inventario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success {
+            border-left-color: #28a745;
+        }
+        .result.error {
+            border-left-color: #dc3545;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 13px;
+            color: #333;
+        }
+        .status {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .success .status {
+            color: #28a745;
+        }
+        .error .status {
+            color: #dc3545;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .info p {
+            color: #1976d2;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Probador de API</h1>
+        <p class="subtitle">Sistema de Inventario Global</p>
+
+        <div class="info">
+            <p><strong>🔑 Credenciales de Prueba:</strong></p>
+            <p>Email: admin@inventario.com</p>
+            <p>Password: Admin123!</p>
+        </div>
+
+        <!-- Test 1: Server Status -->
+        <div class="test-section">
+            <h2>1️⃣ Verificar Servidor</h2>
+            <button onclick="testServer()">Probar Conexión</button>
+            <div id="result1" class="result"></div>
+        </div>
+
+        <!-- Test 2: Login -->
+        <div class="test-section">
+            <h2>2️⃣ Probar Login</h2>
+            <button onclick="testLogin()">Hacer Login</button>
+            <div id="result2" class="result"></div>
+        </div>
+
+        <!-- Test 3: Get Products -->
+        <div class="test-section">
+            <h2>3️⃣ Listar Productos (requiere login)</h2>
+            <button onclick="testProducts()">Obtener Productos</button>
+            <div id="result3" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        async function testServer() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.className = 'result show';
+            resultDiv.innerHTML = '<div class="status">Conectando...</div>';
+
+            try {
+                const response = await fetch('http://localhost:3000/');
+                const data = await response.json();
+
+                resultDiv.className = 'result show success';
+                resultDiv.innerHTML = `
+                    <div class="status">✅ Servidor Funcionando</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <div class="status">❌ Error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.className = 'result show';
+            resultDiv.innerHTML = '<div class="status">Procesando login...</div>';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@inventario.com',
+                        password: 'Admin123!'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.data.token;
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <div class="status">✅ Login Exitoso</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <div class="status">❌ Login Fallido</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <div class="status">❌ Error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        async function testProducts() {
+            const resultDiv = document.getElementById('result3');
+            
+            if (!authToken) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <div class="status">⚠️ Advertencia</div>
+                    <pre>Primero debes hacer login (Test #2) para obtener un token</pre>
+                `;
+                return;
+            }
+
+            resultDiv.className = 'result show';
+            resultDiv.innerHTML = '<div class="status">Obteniendo productos...</div>';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/products', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result show success';
+                    resultDiv.innerHTML = `
+                        <div class="status">✅ Productos Obtenidos</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `
+                        <div class="status">❌ Error</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `
+                    <div class="status">❌ Error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

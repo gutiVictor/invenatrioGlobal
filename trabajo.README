@@ -1,0 +1,40 @@
+Como estás empezando, necesitas algo rápido de construir, fácil de escalar y fácil de mantener.
+Stack sugerido:
+Backend: Node.js + Express (o Python + FastAPI si te manejas mejor con Python)
+Frontend: React (con Vite o Next.js)
+Base de datos: MySQL (como ya mencionaste)
+ORM: Prisma (para Node) o SQLAlchemy (para Python)
+Autenticación: JWT con roles (admin, técnico, usuario final)
+Deploy inicial: Railway, Render o VPS con Docker (barato y rápido)
+🧩 Funcionalidades clave que debes incluir
+Ya lo tienes bien claro, pero aquí te lo ordeno como módulos:
+Gestión de equipos
+Tipos: Desktop, laptop, impresora, periférico, etc.
+Campos: marca, modelo, serial, fecha ingreso, proveedor, costo, estado, foto, etc.
+Categorías y etiquetas personalizables.
+Asignación a usuarios
+Relación equipo ↔ usuario (con historial de asignaciones).
+Datos del usuario: nombre, cargo, departamento, email, teléfono, etc.
+Mantenimiento
+Tipos: preventivo, correctivo, garantía.
+Programación de mantenimientos (con alertas por email o notificaciones en app).
+Historial por equipo.
+Alertas
+Vencimiento de garantía.
+Mantenimiento próximo.
+Equipos sin asignar.
+Reportes
+Inventario total.
+Equipos por usuario.
+Costos por tipo o departamento.
+Mantenimientos pendientes.
+Roles y permisos
+Admin: todo.
+Técnico: solo mantenimiento.
+Usuario final: solo ver sus equipos.
+🧪 Consejo extra: MVP primero
+No intentes hacer todo de golpe. Entrega un MVP (Producto Mínimo Viable) con:
+Alta de equipos
+Asignación a usuarios
+Ver inventario
+Login básico
