@@ -42,6 +42,12 @@ const ProductList = () => {
         }
     };
 
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -79,9 +85,9 @@ const ProductList = () => {
                     <div className="flex justify-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                     </div>
-                ) : products.length > 0 ? (
+                ) : filteredProducts.length > 0 ? (
                     <ProductTable
-                        products={products}
+                        products={filteredProducts}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                     />
