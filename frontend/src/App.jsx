@@ -11,6 +11,8 @@ import ProductList from './pages/Products/ProductList';
 import ProductForm from './pages/Products/ProductForm';
 import CategoryList from './pages/Categories/CategoryList';
 import CategoryForm from './pages/Categories/CategoryForm';
+import SupplierList from './pages/Suppliers/SupplierList';
+import SupplierForm from './pages/Suppliers/SupplierForm';
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +52,11 @@ function App() {
                         <Route path="categories" element={<CategoryList />} />
                         <Route path="categories/new" element={<CategoryForm />} />
                         <Route path="categories/edit/:id" element={<CategoryForm />} />
+
+                        {/* Rutas de Proveedores */}
+                        <Route path="suppliers" element={<SupplierList />} />
+                        <Route path="suppliers/new" element={<SupplierForm />} />
+                        <Route path="suppliers/edit/:id" element={<SupplierForm />} />
 
                         {/* Rutas de Activos */}
                         <Route path="assets" element={<AssetList />} />

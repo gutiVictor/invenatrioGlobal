@@ -4,6 +4,7 @@ const categoryRoutes = require('./categories.routes');
 const assetRoutes = require('./assets.routes');
 const maintenanceRoutes = require('./maintenance.routes');
 const warehouseRoutes = require('./warehouses.routes');
+const supplierRoutes = require('./suppliers.routes');
 
 const setupRoutes = (app) => {
   // Ruta de bienvenida
@@ -18,7 +19,8 @@ const setupRoutes = (app) => {
         categories: '/api/categories',
         assets: '/api/assets',
         maintenance: '/api/maintenance',
-        warehouses: '/api/warehouses'
+        warehouses: '/api/warehouses',
+        suppliers: '/api/suppliers'
       }
     });
   });
@@ -30,6 +32,7 @@ const setupRoutes = (app) => {
   app.use('/api/assets', assetRoutes);
   app.use('/api/maintenance', maintenanceRoutes);
   app.use('/api/warehouses', warehouseRoutes);
+  app.use('/api/suppliers', supplierRoutes);
 
   // Ruta 404
   app.use('*', (req, res) => {

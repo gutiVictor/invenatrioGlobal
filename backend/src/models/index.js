@@ -5,6 +5,7 @@ const Asset = require('./Asset');
 const Maintenance = require('./Maintenance');
 const AssetAssignment = require('./AssetAssignment');
 const Warehouse = require('./Warehouse');
+const Supplier = require('./Supplier');
 
 // Definir relaciones
 Product.belongsTo(Category, {
@@ -55,5 +56,6 @@ module.exports = {
   Asset,
   Maintenance,
   AssetAssignment,
-  Warehouse
+  Warehouse,
+  Supplier
 };
