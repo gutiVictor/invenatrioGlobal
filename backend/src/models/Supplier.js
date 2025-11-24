@@ -40,13 +40,25 @@ const Supplier = sequelize.define('suppliers', {
     type: DataTypes.STRING(100),
     allowNull: true
   },
+  state: {
+    type: DataTypes.STRING(60),
+    allowNull: true
+  },
+  postal_code: {
+    type: DataTypes.STRING(12),
+    allowNull: true
+  },
   country: {
-    type: DataTypes.STRING(100),
-    defaultValue: 'México'
+    type: DataTypes.STRING(2),
+    defaultValue: 'MX'
   },
   payment_terms_days: {
     type: DataTypes.INTEGER,
     defaultValue: 30
+  },
+  lead_time_days: {
+    type: DataTypes.INTEGER,
+    defaultValue: 7
   },
   contact_person: {
     type: DataTypes.STRING(100),
@@ -59,11 +71,27 @@ const Supplier = sequelize.define('suppliers', {
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
+  updated_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
   }
 }, {
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: false, // La tabla no tiene updated_at
+  updatedAt: 'updated_at',
   tableName: 'suppliers'
 });
 

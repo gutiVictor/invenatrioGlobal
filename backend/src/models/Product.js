@@ -33,6 +33,21 @@ const Product = sequelize.define('products', {
     type: DataTypes.INTEGER,
     allowNull: true
   },
+  brand: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  model: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  warranty_months: {
+    type: DataTypes.INTEGER,
+    defaultValue: 12,
+    validate: {
+      min: 0
+    }
+  },
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
@@ -69,14 +84,40 @@ const Product = sequelize.define('products', {
     type: DataTypes.STRING(20),
     defaultValue: 'unidad'
   },
+  is_serializable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  is_batchable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  maintenance_cycle_days: {
+    type: DataTypes.INTEGER,
+    defaultValue: 180,
+    validate: {
+      min: 0
+    }
+  },
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   },
-  admission_date: {
-    type: DataTypes.DATEONLY,
+  created_by: {
+    type: DataTypes.INTEGER,
     allowNull: true,
-    defaultValue: DataTypes.NOW
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
+  updated_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    }
   }
 }, {
   timestamps: true,

@@ -29,11 +29,6 @@ const Warehouse = sequelize.define('warehouses', {
     type: DataTypes.STRING(20),
     allowNull: true
   },
-  manager: {
-    type: DataTypes.STRING(100),
-    allowNull: true,
-    comment: 'Obsoleto - usar manager_id'
-  },
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

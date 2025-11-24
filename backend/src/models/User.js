@@ -35,6 +35,18 @@ const User = sequelize.define('users', {
   last_login: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  phone: {
+    type: DataTypes.STRING(25),
+    allowNull: true
+  },
+  email_verified_at: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  must_reset_password: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
   timestamps: true,
