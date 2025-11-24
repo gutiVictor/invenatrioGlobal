@@ -8,7 +8,8 @@ import {
     Settings,
     LogOut,
     X,
-    Monitor
+    Monitor,
+    Truck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +21,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
         { icon: Package, label: 'Productos', path: '/products' },
         { icon: Tags, label: 'Categorías', path: '/categories' },
+        { icon: Truck, label: 'Proveedores', path: '/suppliers' },
         { icon: Monitor, label: 'Activos IT', path: '/assets' },
         { icon: Warehouse, label: 'Almacenes', path: '/warehouses' },
         { icon: ArrowLeftRight, label: 'Movimientos', path: '/movements' },

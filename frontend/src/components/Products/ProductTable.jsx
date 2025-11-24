@@ -13,6 +13,9 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                             Categoría
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Proveedor
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                             Precio
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
@@ -51,6 +54,14 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                 {product.category?.code && (
                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-100 text-secondary-800">
                                         {product.category.code}
+                                    </span>
+                                )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-secondary-900">{product.supplier?.name || 'Sin proveedor'}</div>
+                                {product.supplier?.code && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                        {product.supplier.code}
                                     </span>
                                 )}
                             </td>

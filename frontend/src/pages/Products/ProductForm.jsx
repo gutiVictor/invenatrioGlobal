@@ -11,6 +11,7 @@ const ProductForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [categories, setCategories] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -32,6 +33,7 @@ const ProductForm = () => {
 
     useEffect(() => {
         fetchCategories();
+        fetchSuppliers();
         if (isEditMode) {
             fetchProduct(id);
         }
@@ -45,6 +47,17 @@ const ProductForm = () => {
             }
         } catch (err) {
             console.error('Error loading categories:', err);
+        }
+    };
+
+    const fetchSuppliers = async () => {
+        try {
+            const response = await api.get('/suppliers');
+            if (response.data.success) {
+                setSuppliers(response.data.data);
+            }
+        } catch (err) {
+            console.error('Error loading suppliers:', err);
         }
     };
 
@@ -344,16 +357,21 @@ const ProductForm = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-secondary-700 mb-1">
-                                    ID Proveedor
+                                    Proveedor
                                 </label>
-                                <input
-                                    type="number"
+                                <select
                                     name="supplier_id"
                                     value={formData.supplier_id}
                                     onChange={handleChange}
                                     className="input-field"
-                                    placeholder="ID del proveedor"
-                                />
+                                >
+                                    <option value="">Seleccionar...</option>
+                                    {suppliers.map(supplier => (
+                                        <option key={supplier.id} value={supplier.id}>
+                                            {supplier.name} {supplier.code ? `(${supplier.code})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="flex items-center gap-2 pt-2">

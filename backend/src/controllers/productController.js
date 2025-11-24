@@ -1,4 +1,4 @@
-const { Product, Category } = require('../models');
+const { Product, Category, Supplier } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -42,6 +42,10 @@ const getAllProducts = async (req, res) => {
         model: Category,
         as: 'category',
         attributes: ['id', 'name', 'code']
+      }, {
+        model: Supplier,
+        as: 'supplier',
+        attributes: ['id', 'name', 'code']
       }],
       limit: parseInt(limit),
       offset: parseInt(offset),
@@ -80,6 +84,10 @@ const getProductById = async (req, res) => {
       include: [{
         model: Category,
         as: 'category',
+        attributes: ['id', 'name', 'code']
+      }, {
+        model: Supplier,
+        as: 'supplier',
         attributes: ['id', 'name', 'code']
       }]
     });

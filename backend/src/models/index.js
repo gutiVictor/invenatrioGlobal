@@ -18,6 +18,17 @@ Category.hasMany(Product, {
   as: 'products'
 });
 
+// Relación Product-Supplier
+Product.belongsTo(Supplier, {
+  foreignKey: 'supplier_id',
+  as: 'supplier'
+});
+
+Supplier.hasMany(Product, {
+  foreignKey: 'supplier_id',
+  as: 'products'
+});
+
 // Relaciones de Activos
 Product.hasMany(Asset, {
   foreignKey: 'product_id',
