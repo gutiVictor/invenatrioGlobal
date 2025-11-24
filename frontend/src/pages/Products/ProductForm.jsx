@@ -20,15 +20,20 @@ const ProductForm = () => {
         description: '',
         category_id: '',
         supplier_id: '',
+        brand: '',
+        model: '',
+        warranty_months: 12,
         price: '',
         cost: '',
         stock: '',
         stock_min: '',
         stock_max: '',
-        unit: 'un',
+        unit: 'unidad',
+        is_serializable: true,
+        is_batchable: false,
+        maintenance_cycle_days: 180,
         image_url: '',
-        active: true,
-        admission_date: new Date().toISOString().split('T')[0]
+        active: true
     });
 
     useEffect(() => {
@@ -136,23 +141,7 @@ const ProductForm = () => {
                                 Información Básica
                             </h3>
 
-
-
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
-                                        Fecha de Ingreso *
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="admission_date"
-                                        required
-                                        value={formData.admission_date}
-                                        onChange={handleChange}
-                                        className="input-field"
-                                    />
-                                </div>
-
                                 <div className="sm:col-span-2">
                                     <label className="block text-sm font-medium text-secondary-700 mb-1">
                                         Nombre del Producto *
@@ -209,6 +198,129 @@ const ProductForm = () => {
                                         className="input-field resize-none"
                                         placeholder="Detalles adicionales del producto..."
                                     />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card space-y-4">
+                            <h3 className="text-lg font-semibold text-secondary-900 border-b border-secondary-100 pb-2">
+                                Información del Equipo
+                            </h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
+                                        Marca
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="brand"
+                                        value={formData.brand}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="Ej: HP, Dell, Lenovo"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
+                                        Modelo
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="model"
+                                        value={formData.model}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="Ej: Pavilion 15, Latitude 5420"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card space-y-4">
+                            <h3 className="text-lg font-semibold text-secondary-900 border-b border-secondary-100 pb-2">
+                                Garantía y Mantenimiento
+                            </h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
+                                        Meses de Garantía
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="warranty_months"
+                                        min="0"
+                                        max="60"
+                                        value={formData.warranty_months}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="12"
+                                    />
+                                    <p className="text-xs text-secondary-500 mt-1">Por defecto: 12 meses</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
+                                        Ciclo de Mantenimiento (días)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="maintenance_cycle_days"
+                                        min="0"
+                                        value={formData.maintenance_cycle_days}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="180"
+                                    />
+                                    <p className="text-xs text-secondary-500 mt-1">Recomendado: 180 días (6 meses)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card space-y-4">
+                            <h3 className="text-lg font-semibold text-secondary-900 border-b border-secondary-100 pb-2">
+                                Configuración de Trazabilidad
+                            </h3>
+
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <input
+                                        type="checkbox"
+                                        id="is_serializable"
+                                        name="is_serializable"
+                                        checked={formData.is_serializable}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, is_serializable: e.target.checked }))}
+                                        className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-0.5"
+                                    />
+                                    <div className="flex-1">
+                                        <label htmlFor="is_serializable" className="text-sm font-medium text-secondary-900 cursor-pointer">
+                                            Requiere Número de Serie
+                                        </label>
+                                        <p className="text-xs text-secondary-600 mt-1">
+                                            Activa el seguimiento individual por número de serie para este producto
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                    <input
+                                        type="checkbox"
+                                        id="is_batchable"
+                                        name="is_batchable"
+                                        checked={formData.is_batchable}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, is_batchable: e.target.checked }))}
+                                        className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-0.5"
+                                    />
+                                    <div className="flex-1">
+                                        <label htmlFor="is_batchable" className="text-sm font-medium text-secondary-900 cursor-pointer">
+                                            Maneja Lotes
+                                        </label>
+                                        <p className="text-xs text-secondary-600 mt-1">
+                                            Permite gestionar este producto por lotes con fechas de vencimiento
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

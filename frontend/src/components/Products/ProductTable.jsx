@@ -13,7 +13,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                             Categoría
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                            Proveedor
+                            Especificaciones
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                             Precio
@@ -45,7 +45,12 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                     </div>
                                     <div className="ml-4">
                                         <div className="text-sm font-medium text-secondary-900">{product.name}</div>
-                                        <div className="text-sm text-secondary-500">{product.sku}</div>
+                                        {(product.brand || product.model) && (
+                                            <div className="text-xs text-secondary-500">
+                                                {product.brand} {product.model}
+                                            </div>
+                                        )}
+                                        <div className="text-xs text-secondary-400">{product.sku}</div>
                                     </div>
                                 </div>
                             </td>
@@ -57,13 +62,29 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                                     </span>
                                 )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-secondary-900">{product.supplier?.name || 'Sin proveedor'}</div>
-                                {product.supplier?.code && (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                        {product.supplier.code}
-                                    </span>
-                                )}
+                            <td className="px-6 py-4">
+                                <div className="flex flex-col gap-1">
+                                    {product.is_serializable && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            🏷️ Serial
+                                        </span>
+                                    )}
+                                    {product.is_batchable && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                            📦 Lote
+                                        </span>
+                                    )}
+                                    {product.warranty_months > 0 && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                            📋 {product.warranty_months}m
+                                        </span>
+                                    )}
+                                    {product.maintenance_cycle_days > 0 && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                            🔧 {product.maintenance_cycle_days}d
+                                        </span>
+                                    )}
+                                </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-secondary-900">${product.price}</div>
