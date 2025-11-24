@@ -41,7 +41,7 @@ const getAllProducts = async (req, res) => {
       include: [{
         model: Category,
         as: 'category',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'code']
       }],
       limit: parseInt(limit),
       offset: parseInt(offset),
@@ -80,7 +80,7 @@ const getProductById = async (req, res) => {
       include: [{
         model: Category,
         as: 'category',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'code']
       }]
     });
 
@@ -190,7 +190,7 @@ const createProduct = async (req, res) => {
       include: [{
         model: Category,
         as: 'category',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'code']
       }]
     });
 
@@ -259,7 +259,7 @@ const updateProduct = async (req, res) => {
       include: [{
         model: Category,
         as: 'category',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'code']
       }]
     });
 

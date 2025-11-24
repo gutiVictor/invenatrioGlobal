@@ -48,6 +48,11 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-secondary-900">{product.category?.name || 'Sin categoría'}</div>
+                                {product.category?.code && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-100 text-secondary-800">
+                                        {product.category.code}
+                                    </span>
+                                )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-secondary-900">${product.price}</div>

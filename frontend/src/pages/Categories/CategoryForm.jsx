@@ -14,6 +14,8 @@ const CategoryForm = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
+        code: '',
+        slug: '',
         active: true
     });
 
@@ -105,6 +107,35 @@ const CategoryForm = () => {
                     />
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-secondary-700 mb-1">
+                            Código
+                        </label>
+                        <input
+                            type="text"
+                            name="code"
+                            value={formData.code || ''}
+                            onChange={handleChange}
+                            className="input-field"
+                            placeholder="Ej: LAP"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-secondary-700 mb-1">
+                            Slug (URL)
+                        </label>
+                        <input
+                            type="text"
+                            name="slug"
+                            value={formData.slug || ''}
+                            onChange={handleChange}
+                            className="input-field"
+                            placeholder="Auto-generado si se deja vacío"
+                        />
+                    </div>
+                </div>
+
                 <div>
                     <label className="block text-sm font-medium text-secondary-700 mb-1">
                         Descripción
@@ -132,6 +163,13 @@ const CategoryForm = () => {
                         <label htmlFor="active" className="ml-2 block text-sm text-secondary-900">
                             Categoría Activa
                         </label>
+                    </div>
+                )}
+
+                {isEditMode && formData.updated_at && (
+                    <div className="text-xs text-secondary-400 pt-4 border-t border-secondary-100">
+                        <p>Última actualización: {new Date(formData.updated_at).toLocaleString()}</p>
+                        {formData.created_by && <p>Creado por ID: {formData.created_by}</p>}
                     </div>
                 )}
 

@@ -7,7 +7,13 @@ const CategoryTable = ({ categories, onEdit, onDelete }) => {
                 <thead className="bg-secondary-50">
                     <tr>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Código
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                             Nombre
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Slug
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                             Descripción
@@ -24,7 +30,13 @@ const CategoryTable = ({ categories, onEdit, onDelete }) => {
                     {categories.map((category) => (
                         <tr key={category.id} className="hover:bg-secondary-50 transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-secondary-900">{category.code || '-'}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-secondary-900">{category.name}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-secondary-500">{category.slug || '-'}</div>
                             </td>
                             <td className="px-6 py-4">
                                 <div className="text-sm text-secondary-500 truncate max-w-xs">{category.description || '-'}</div>

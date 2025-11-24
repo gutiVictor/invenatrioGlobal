@@ -26,11 +26,33 @@ const Category = sequelize.define('categories', {
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  code: {
+    type: DataTypes.STRING(20),
+    unique: true,
+    allowNull: true
+  },
+  slug: {
+    type: DataTypes.STRING(100),
+    unique: true,
+    allowNull: true
+  },
+  metadata: {
+    type: DataTypes.JSONB,
+    defaultValue: {}
+  },
+  created_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  updated_by: {
+    type: DataTypes.INTEGER,
+    allowNull: true
   }
 }, {
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: false,
+  updatedAt: 'updated_at',
   tableName: 'categories'
 });
 

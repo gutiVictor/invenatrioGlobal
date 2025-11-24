@@ -69,7 +69,8 @@ const getCategoryById = async (req, res) => {
  */
 const createCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, code, slug, metadata } = req.body;
+    const userId = req.user ? req.user.id : null; // Asumiendo que tenemos el usuario en req.user
 
     if (!name) {
       return res.status(400).json({
@@ -78,9 +79,22 @@ const createCategory = async (req, res) => {
       });
     }
 
+    // Generar slug si no viene
+    let finalSlug = slug;
+    if (!finalSlug) {
+      finalSlug = name.toLowerCase()
+        .replace(/[^\w ]+/g, '')
+        .replace(/ +/g, '-');
+    }
+
     const category = await Category.create({
       name,
-      description
+      description,
+      code,
+      slug: finalSlug,
+      metadata,
+      created_by: userId,
+      updated_by: userId
     });
 
     res.status(201).json({
@@ -103,7 +117,8 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, active } = req.body;
+    const { name, description, active, code, slug, metadata } = req.body;
+    const userId = req.user ? req.user.id : null;
 
     const category = await Category.findByPk(id);
 
@@ -117,7 +132,11 @@ const updateCategory = async (req, res) => {
     await category.update({
       name,
       description,
-      active
+      active,
+      code,
+      slug,
+      metadata,
+      updated_by: userId
     });
 
     res.json({
