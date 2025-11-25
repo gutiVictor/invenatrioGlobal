@@ -38,10 +38,10 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Rate limiting
+// Rate limiting - Configuración más permisiva para desarrollo
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutos
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // Aumentado de 100 a 1000 para desarrollo
   message: {
     success: false,
     message: 'Demasiadas peticiones, por favor intenta más tarde'

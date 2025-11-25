@@ -124,12 +124,19 @@ const createProduct = async (req, res) => {
       description,
       category_id,
       supplier_id,
+      brand,
+      model,
+      warranty_months,
       price,
       cost,
+      stock,           // ← AGREGADO
       stock_min,
       stock_max,
       image_url,
       unit,
+      is_serializable,
+      is_batchable,
+      maintenance_cycle_days,
       admission_date,
       active
     } = req.body;
@@ -173,7 +180,9 @@ const createProduct = async (req, res) => {
 
     // Crear producto
     console.log('Creating product with data:', {
-      name, sku, barcode, category_id, supplier_id, price, cost, stock_min, stock_max, unit, admission_date
+      name, sku, barcode, category_id, supplier_id, brand, model, warranty_months, 
+      price, cost, stock, stock_min, stock_max, unit, is_serializable, is_batchable,
+      maintenance_cycle_days, admission_date
     });
 
     const product = await Product.create({
@@ -183,12 +192,19 @@ const createProduct = async (req, res) => {
       description,
       category_id,
       supplier_id: supplier_id || null,
+      brand,
+      model,
+      warranty_months: warranty_months || 12,
       price: price || 0,
       cost: cost || 0,
+      stock: stock || 0,           // ← AGREGADO
       stock_min: stock_min || 0,
       stock_max: stock_max || null,
       image_url,
       unit: unit || 'unidad',
+      is_serializable: is_serializable !== undefined ? is_serializable : true,
+      is_batchable: is_batchable !== undefined ? is_batchable : false,
+      maintenance_cycle_days: maintenance_cycle_days || 180,
       admission_date: admission_date || new Date(),
       active: active !== undefined ? active : true
     });

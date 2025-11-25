@@ -56,7 +56,7 @@ const MovementForm = ({ isOpen, onClose, onSuccess }) => {
         try {
             const response = await api.get('/warehouses?active=true');
             if (response.data.success) {
-                setWarehouses(response.data.data.warehouses || []);
+                setWarehouses(response.data.data || []);
             }
         } catch (error) {
             console.error('Error fetching warehouses:', error);
