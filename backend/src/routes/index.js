@@ -6,6 +6,7 @@ const maintenanceRoutes = require('./maintenance.routes');
 const warehouseRoutes = require('./warehouses.routes');
 const supplierRoutes = require('./suppliers.routes');
 const serialNumberRoutes = require('./serialNumber.routes');
+const movementRoutes = require('./movement.routes');
 const auditRoutes = require('./audit.routes');
 
 const setupRoutes = (app) => {
@@ -24,6 +25,7 @@ const setupRoutes = (app) => {
         warehouses: '/api/warehouses',
         suppliers: '/api/suppliers',
         serialNumbers: '/api/serial-numbers',
+        movements: '/api/movements',
         audit: '/api/audit'
       }
     });
@@ -38,6 +40,7 @@ const setupRoutes = (app) => {
   app.use('/api/warehouses', warehouseRoutes);
   app.use('/api/suppliers', supplierRoutes);
   app.use('/api/serial-numbers', serialNumberRoutes);
+  app.use('/api/movements', movementRoutes);
   app.use('/api/audit', auditRoutes);
 
   // Ruta 404

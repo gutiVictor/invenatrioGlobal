@@ -3,12 +3,14 @@ const Category = require('./Category');
 const Product = require('./Product');
 const Warehouse = require('./Warehouse');
 const Supplier = require('./Supplier');
+const Customer = require('./Customer');
 
 // Nuevos modelos de trazabilidad y mantenimiento
 const SerialNumber = require('./SerialNumber');
 const MaintenanceType = require('./MaintenanceType');
 const MaintenanceOrder = require('./MaintenanceOrder');
 const MaintenanceItem = require('./MaintenanceItem');
+const InventoryMovement = require('./InventoryMovement');
 const AuditLog = require('./AuditLog');
 
 // ========================================
@@ -142,6 +144,72 @@ User.hasMany(AuditLog, {
   as: 'auditLogs'
 });
 
+// Relación InventoryMovement-Product
+InventoryMovement.belongsTo(Product, {
+  foreignKey: 'product_id',
+  as: 'product'
+});
+
+Product.hasMany(InventoryMovement, {
+  foreignKey: 'product_id',
+  as: 'movements'
+});
+
+// Relación InventoryMovement-Warehouse (origen)
+InventoryMovement.belongsTo(Warehouse, {
+  foreignKey: 'warehouse_id',
+  as: 'warehouse'
+});
+
+Warehouse.hasMany(InventoryMovement, {
+  foreignKey: 'warehouse_id',
+  as: 'movements'
+});
+
+// Relación InventoryMovement-Warehouse (destino)
+InventoryMovement.belongsTo(Warehouse, {
+  foreignKey: 'warehouse_dest_id',
+  as: 'warehouseDest'
+});
+
+Warehouse.hasMany(InventoryMovement, {
+  foreignKey: 'warehouse_dest_id',
+  as: 'incomingMovements'
+});
+
+// Relación InventoryMovement-User (creador)
+InventoryMovement.belongsTo(User, {
+  foreignKey: 'created_by',
+  as: 'creator'
+});
+
+User.hasMany(InventoryMovement, {
+  foreignKey: 'created_by',
+  as: 'createdMovements'
+});
+
+// Relación InventoryMovement-Customer
+InventoryMovement.belongsTo(Customer, {
+  foreignKey: 'customer_id',
+  as: 'customer'
+});
+
+Customer.hasMany(InventoryMovement, {
+  foreignKey: 'customer_id',
+  as: 'movements'
+});
+
+// Relación InventoryMovement-Supplier
+InventoryMovement.belongsTo(Supplier, {
+  foreignKey: 'supplier_id',
+  as: 'supplier'
+});
+
+Supplier.hasMany(InventoryMovement, {
+  foreignKey: 'supplier_id',
+  as: 'movements'
+});
+
 // ========================================
 // EXPORTAR MODELOS
 // ========================================
@@ -152,9 +220,11 @@ module.exports = {
   Product,
   Warehouse,
   Supplier,
+  Customer,
   SerialNumber,
   MaintenanceType,
   MaintenanceOrder,
   MaintenanceItem,
+  InventoryMovement,
   AuditLog
 };
