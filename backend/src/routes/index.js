@@ -8,6 +8,7 @@ const supplierRoutes = require('./suppliers.routes');
 const serialNumberRoutes = require('./serialNumber.routes');
 const movementRoutes = require('./movement.routes');
 const auditRoutes = require('./audit.routes');
+const dashboardRoutes = require('./dashboard.routes');
 
 const setupRoutes = (app) => {
   // Ruta de bienvenida
@@ -26,7 +27,8 @@ const setupRoutes = (app) => {
         suppliers: '/api/suppliers',
         serialNumbers: '/api/serial-numbers',
         movements: '/api/movements',
-        audit: '/api/audit'
+        audit: '/api/audit',
+        dashboard: '/api/dashboard'
       }
     });
   });
@@ -42,6 +44,7 @@ const setupRoutes = (app) => {
   app.use('/api/serial-numbers', serialNumberRoutes);
   app.use('/api/movements', movementRoutes);
   app.use('/api/audit', auditRoutes);
+  app.use('/api/dashboard', dashboardRoutes);
 
   // Ruta 404
   app.use('*', (req, res) => {
