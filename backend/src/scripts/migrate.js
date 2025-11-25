@@ -18,7 +18,7 @@ async function runMigration() {
     console.log('🔄 Iniciando migración de base de datos...\n');
     
     // Leer el archivo SQL (usando el script sin comandos psql)
-    const sqlPath = path.join(__dirname, '..', '..', '..', 'database_init_new_fixed.sql');
+    const sqlPath = path.join(__dirname, '..', '..', '..', 'database_init_clean.sql');
     console.log(`📄 Leyendo: ${sqlPath}\n`);
     const sql = fs.readFileSync(sqlPath, 'utf8');
     

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Trash2, Box, Shield, Wrench, History, QrCode } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Box, Shield, Wrench, QrCode } from 'lucide-react';
 import api from '../../services/api';
 import SerialNumberList from '../../components/Products/SerialNumberList';
+import MaintenanceHistory from '../../components/Products/MaintenanceHistory';
+import MaintenanceForm from '../../components/Products/MaintenanceForm';
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -10,6 +12,7 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('info');
+    const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
 
     useEffect(() => {
         fetchProduct();
@@ -217,12 +220,18 @@ const ProductDetail = () => {
                 )}
 
                 {activeTab === 'maintenance' && (
-                    <div className="text-center py-8">
-                        <History className="h-12 w-12 text-secondary-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium text-secondary-900">Historial de Mantenimiento</h3>
-                        <p className="text-secondary-500 mb-4">Aquí aparecerá el historial de mantenimientos preventivos y correctivos.</p>
-                        <button className="btn-secondary">Programar Mantenimiento</button>
-                    </div>
+                    <>
+                        <MaintenanceHistory
+                            productId={id}
+                            onScheduleClick={() => setShowMaintenanceForm(true)}
+                        />
+                        <MaintenanceForm
+                            isOpen={showMaintenanceForm}
+                            onClose={() => setShowMaintenanceForm(false)}
+                            productId={id}
+                            onSuccess={fetchProduct}
+                        />
+                    </>
                 )}
             </div>
         </div>
