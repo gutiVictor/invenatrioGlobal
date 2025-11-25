@@ -25,7 +25,6 @@ const ProductForm = () => {
         warranty_months: 12,
         price: '',
         cost: '',
-        stock: '',
         stock_min: '',
         stock_max: '',
         unit: 'unidad',
@@ -376,22 +375,6 @@ const ProductForm = () => {
 
                                 <div>
                                     <label className="block text-sm font-medium text-secondary-700 mb-1">
-                                        Stock Inicial *
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="stock"
-                                        required
-                                        min="0"
-                                        value={formData.stock}
-                                        onChange={handleChange}
-                                        className="input-field"
-                                        placeholder="0"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-secondary-700 mb-1">
                                         Stock Mínimo
                                     </label>
                                     <input
@@ -403,6 +386,7 @@ const ProductForm = () => {
                                         className="input-field"
                                         placeholder="5"
                                     />
+                                    <p className="text-xs text-secondary-500 mt-1">Alerta cuando el stock esté bajo</p>
                                 </div>
 
                                 <div>
@@ -418,6 +402,14 @@ const ProductForm = () => {
                                         className="input-field"
                                         placeholder="100"
                                     />
+                                    <p className="text-xs text-secondary-500 mt-1">Límite máximo recomendado</p>
+                                </div>
+
+                                <div className="sm:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <p className="text-sm text-blue-800">
+                                        <strong>ℹ️ Gestión de Stock:</strong> El inventario se registra mediante <strong>Movimientos → Entrada</strong> al recibir compras.
+                                        Cada entrada actualiza automáticamente el stock disponible.
+                                    </p>
                                 </div>
                             </div>
                         </div>
