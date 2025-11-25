@@ -15,6 +15,7 @@ import CategoryForm from './pages/Categories/CategoryForm';
 import SupplierList from './pages/Suppliers/SupplierList';
 import SupplierForm from './pages/Suppliers/SupplierForm';
 import MovementList from './pages/Movements/MovementList';
+import WarehouseList from './pages/Warehouses/WarehouseList';
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -66,7 +67,7 @@ function App() {
                         <Route path="assets/new" element={<AssetCreate />} />
                         <Route path="assets/:id/edit" element={<AssetEdit />} />
 
-                        <Route path="warehouses" element={<div>Página de Almacenes (En construcción)</div>} />
+                        <Route path="warehouses" element={<WarehouseList />} />
                         <Route path="movements" element={<MovementList />} />
                         <Route path="settings" element={<div>Página de Configuración (En construcción)</div>} />
                     </Route>
