@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react';
 import { Package, AlertTriangle, Wrench, TrendingUp, Warehouse, Laptop, Clock, Shield, Settings } from 'lucide-react';
 import api from '../services/api';
 
-const KPICard = ({ title, value, icon: Icon, color, loading }) => (
-    <div className="card hover:shadow-md transition-shadow duration-200">
+import { useNavigate } from 'react-router-dom';
+
+const KPICard = ({ title, value, icon: Icon, color, loading, onClick }) => (
+    <div
+        className={`card hover:shadow-md transition-shadow duration-200 ${onClick ? 'cursor-pointer' : ''}`}
+        onClick={onClick}
+    >
         <div className="flex items-center justify-between">
             <div>
                 <p className="text-sm font-medium text-secondary-500">{title}</p>
@@ -21,6 +26,7 @@ const KPICard = ({ title, value, icon: Icon, color, loading }) => (
 );
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [summary, setSummary] = useState(null);
     const [equiposPorCategoria, setEquiposPorCategoria] = useState([]);
@@ -150,6 +156,7 @@ const Dashboard = () => {
                     icon={Package}
                     color="bg-blue-500"
                     loading={loading}
+                    onClick={() => navigate('/assets')}
                 />
                 <KPICard
                     title="Equipos en Uso"
@@ -157,6 +164,7 @@ const Dashboard = () => {
                     icon={Laptop}
                     color="bg-green-500"
                     loading={loading}
+                    onClick={() => navigate('/assets?status=in_use')}
                 />
                 <KPICard
                     title="En Reparación"
@@ -164,6 +172,7 @@ const Dashboard = () => {
                     icon={Settings}
                     color="bg-orange-500"
                     loading={loading}
+                    onClick={() => navigate('/assets?status=under_repair')}
                 />
                 <KPICard
                     title="Mantenimientos Próximos"
@@ -171,6 +180,8 @@ const Dashboard = () => {
                     icon={Wrench}
                     color="bg-purple-500"
                     loading={loading}
+                    // For now, just go to assets, as we don't have a maintenance filter yet
+                    onClick={() => navigate('/assets')}
                 />
             </div>
 

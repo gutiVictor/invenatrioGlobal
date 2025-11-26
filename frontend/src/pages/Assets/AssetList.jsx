@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import AssetTable from '../../components/Assets/AssetTable';
 import AssignmentModal from '../../components/Assets/AssignmentModal';
 import assetService from '../../services/assetService';
 
 const AssetList = () => {
+    const [searchParams] = useSearchParams();
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,8 +13,8 @@ const AssetList = () => {
     const [selectedAsset, setSelectedAsset] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
-    const [conditionFilter, setConditionFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '');
+    const [conditionFilter, setConditionFilter] = useState(searchParams.get('condition') || '');
 
     const fetchAssets = async () => {
         try {
