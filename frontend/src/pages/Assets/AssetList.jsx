@@ -11,6 +11,10 @@ const AssetList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [conditionFilter, setConditionFilter] = useState('');
+
     const fetchAssets = async () => {
         try {
             setLoading(true);
@@ -69,6 +73,19 @@ const AssetList = () => {
         }
     };
 
+    // Filter logic
+    const filteredAssets = assets.filter(asset => {
+        const matchesSearch =
+            asset.serial_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            asset.asset_tag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            asset.Product?.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = statusFilter ? asset.status === statusFilter : true;
+        const matchesCondition = conditionFilter ? asset.condition === conditionFilter : true;
+
+        return matchesSearch && matchesStatus && matchesCondition;
+    });
+
     if (loading) return <div className="p-4">Cargando...</div>;
     if (error) return <div className="p-4 text-red-600">{error}</div>;
 
@@ -91,12 +108,71 @@ const AssetList = () => {
                 </div>
             </div>
 
+            {/* Search and Filters */}
+            <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 bg-white p-4 rounded-lg shadow">
+                <div className="sm:col-span-2">
+                    <label htmlFor="search" className="block text-sm font-medium text-gray-700">Buscar</label>
+                    <div className="mt-1">
+                        <input
+                            type="text"
+                            name="search"
+                            id="search"
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            placeholder="Serial, Tag o Modelo"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Estado</label>
+                    <div className="mt-1">
+                        <select
+                            id="status"
+                            name="status"
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="">Todos</option>
+                            <option value="in_stock">En Stock</option>
+                            <option value="in_use">En Uso</option>
+                            <option value="under_repair">En Reparación</option>
+                            <option value="retired">Retirado</option>
+                            <option value="stolen">Robado</option>
+                            <option value="disposed">Desechado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                    <label htmlFor="condition" className="block text-sm font-medium text-gray-700">Condición</label>
+                    <div className="mt-1">
+                        <select
+                            id="condition"
+                            name="condition"
+                            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            value={conditionFilter}
+                            onChange={(e) => setConditionFilter(e.target.value)}
+                        >
+                            <option value="">Todas</option>
+                            <option value="new">Nuevo</option>
+                            <option value="good">Bueno</option>
+                            <option value="fair">Regular</option>
+                            <option value="poor">Malo</option>
+                            <option value="broken">Roto</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div className="mt-8 flex flex-col">
                 <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                         <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                             <AssetTable
-                                assets={assets}
+                                assets={filteredAssets}
                                 onDelete={handleDelete}
                                 onAssign={handleOpenAssignModal}
                                 onReturn={handleReturn}
