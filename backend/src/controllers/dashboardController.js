@@ -361,22 +361,23 @@ const getValorInventario = async (req, res) => {
 /**
  * Obtener últimas entradas - SIMPLIFICADO
  */
+/**
+ * Obtener últimas entradas - ACTIVOS RECIENTES
+ */
 const getUltimasEntradas = async (req, res) => {
   try {
     const [results] = await sequelize.query(`
       SELECT 
-        im.id,
-        im.created_at as fecha,
+        a.id,
+        a.created_at as fecha,
         p.name as producto,
         p.sku,
-        im.quantity as cantidad,
-        w.name as almacen,
-        im.reference as referencia
-      FROM inventory_movements im
-      LEFT JOIN products p ON im.product_id = p.id
-      LEFT JOIN warehouses w ON im.warehouse_id = w.id
-      WHERE im.type = 'entrada'
-      ORDER BY im.created_at DESC
+        1 as cantidad,
+        a.location as almacen,
+        a.serial_number as referencia
+      FROM assets a
+      INNER JOIN products p ON a.product_id = p.id
+      ORDER BY a.created_at DESC
       LIMIT 5
     `);
 
@@ -394,24 +395,23 @@ const getUltimasEntradas = async (req, res) => {
 };
 
 /**
- * Obtener últimas asignaciones - SIMPLIFICADO
+ * Obtener últimas asignaciones - ASIGNACIONES DE ACTIVOS
  */
 const getUltimasAsignaciones = async (req, res) => {
   try {
     const [results] = await sequelize.query(`
       SELECT 
-        im.id,
-        im.created_at as fecha,
+        aa.id,
+        aa.assigned_date as fecha,
         p.name as producto,
         p.sku,
-        im.quantity as cantidad,
-        w.name as almacen,
-        im.reference as referencia
-      FROM inventory_movements im
-      LEFT JOIN products p ON im.product_id = p.id
-      LEFT JOIN warehouses w ON im.warehouse_id = w.id
-      WHERE im.type = 'salida'
-      ORDER BY im.created_at DESC
+        1 as cantidad,
+        aa.assigned_to as referencia,
+        aa.department as almacen
+      FROM asset_assignments aa
+      INNER JOIN assets a ON aa.asset_id = a.id
+      INNER JOIN products p ON a.product_id = p.id
+      ORDER BY aa.assigned_date DESC
       LIMIT 5
     `);
 
