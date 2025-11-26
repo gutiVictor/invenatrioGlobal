@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Package, AlertTriangle, Wrench, TrendingUp, Warehouse, Laptop } from 'lucide-react';
+import { Package, AlertTriangle, Wrench, TrendingUp, Warehouse, Laptop, Clock, Shield, Settings } from 'lucide-react';
 import api from '../services/api';
 
 const KPICard = ({ title, value, icon: Icon, color, loading }) => (
@@ -25,8 +25,15 @@ const Dashboard = () => {
     const [summary, setSummary] = useState(null);
     const [equiposPorCategoria, setEquiposPorCategoria] = useState([]);
     const [equiposPorAlmacen, setEquiposPorAlmacen] = useState([]);
-    const [stockBajo, setStockBajo] = useState([]);
-    const [mantenimientos, setMantenimientos] = useState([]);
+    const [equiposPorEstado, setEquiposPorEstado] = useState([]);
+    const [valorInventario, setValorInventario] = useState([]);
+
+    // Nuevas alertas para activos IT
+    const [equiposMantenimiento, setEquiposMantenimiento] = useState([]);
+    const [garantiasVencer, setGarantiasVencer] = useState([]);
+    const [equiposReparacion, setEquiposReparacion] = useState([]);
+    const [asignacionesVencidas, setAsignacionesVencidas] = useState([]);
+
     const [ultimasEntradas, setUltimasEntradas] = useState([]);
     const [ultimasAsignaciones, setUltimasAsignaciones] = useState([]);
 
@@ -43,16 +50,24 @@ const Dashboard = () => {
                 summaryRes,
                 categoriaRes,
                 almacenRes,
-                stockBajoRes,
-                mantenimientosRes,
+                estadoRes,
+                valorRes,
+                mantenimientoRes,
+                garantiasRes,
+                reparacionRes,
+                asignacionesVencidasRes,
                 entradasRes,
                 asignacionesRes
             ] = await Promise.all([
                 api.get('/dashboard/summary'),
                 api.get('/dashboard/equipos-por-categoria'),
                 api.get('/dashboard/equipos-por-almacen'),
-                api.get('/dashboard/stock-bajo'),
-                api.get('/dashboard/mantenimientos-proximos'),
+                api.get('/dashboard/equipos-por-estado'),
+                api.get('/dashboard/valor-inventario'),
+                api.get('/dashboard/equipos-mantenimiento-proximo'),
+                api.get('/dashboard/garantias-por-vencer'),
+                api.get('/dashboard/equipos-reparacion-prolongada'),
+                api.get('/dashboard/asignaciones-vencidas'),
                 api.get('/dashboard/ultimas-entradas'),
                 api.get('/dashboard/ultimas-asignaciones')
             ]);
@@ -60,8 +75,12 @@ const Dashboard = () => {
             if (summaryRes.data.success) setSummary(summaryRes.data.data);
             if (categoriaRes.data.success) setEquiposPorCategoria(categoriaRes.data.data);
             if (almacenRes.data.success) setEquiposPorAlmacen(almacenRes.data.data);
-            if (stockBajoRes.data.success) setStockBajo(stockBajoRes.data.data);
-            if (mantenimientosRes.data.success) setMantenimientos(mantenimientosRes.data.data);
+            if (estadoRes.data.success) setEquiposPorEstado(estadoRes.data.data);
+            if (valorRes.data.success) setValorInventario(valorRes.data.data);
+            if (mantenimientoRes.data.success) setEquiposMantenimiento(mantenimientoRes.data.data);
+            if (garantiasRes.data.success) setGarantiasVencer(garantiasRes.data.data);
+            if (reparacionRes.data.success) setEquiposReparacion(reparacionRes.data.data);
+            if (asignacionesVencidasRes.data.success) setAsignacionesVencidas(asignacionesVencidasRes.data.data);
             if (entradasRes.data.success) setUltimasEntradas(entradasRes.data.data);
             if (asignacionesRes.data.success) setUltimasAsignaciones(asignacionesRes.data.data);
         } catch (error) {
@@ -76,16 +95,51 @@ const Dashboard = () => {
         return date.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
         });
     };
+
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0
+        }).format(value);
+    };
+
+    const getStatusLabel = (status) => {
+        const labels = {
+            'in_use': 'En Uso',
+            'in_stock': 'Disponible',
+            'under_repair': 'En Reparación',
+            'retired': 'Retirado',
+            'stolen': 'Robado',
+            'disposed': 'Desechado'
+        };
+        return labels[status] || status;
+    };
+
+    const getStatusColor = (status) => {
+        const colors = {
+            'in_use': 'bg-blue-500',
+            'in_stock': 'bg-green-500',
+            'under_repair': 'bg-orange-500',
+            'retired': 'bg-gray-500',
+            'stolen': 'bg-red-500',
+            'disposed': 'bg-gray-400'
+        };
+        return colors[status] || 'bg-gray-500';
+    };
+
+    // Calcular equipos en uso desde equiposPorEstado
+    const equiposEnUso = equiposPorEstado.find(e => e.estado === 'in_use')?.cantidad || 0;
+    const equiposEnReparacion = equiposPorEstado.find(e => e.estado === 'under_repair')?.cantidad || 0;
 
     return (
         <div className="space-y-6">
             <div>
                 <h2 className="text-2xl font-bold text-secondary-900">Dashboard de Control de Activos IT</h2>
-                <p className="text-secondary-500">Resumen general del inventario de equipos</p>
+                <p className="text-secondary-500">Gestión y seguimiento de equipos de cómputo y oficina</p>
             </div>
 
             {/* KPI Cards */}
@@ -98,22 +152,22 @@ const Dashboard = () => {
                     loading={loading}
                 />
                 <KPICard
-                    title="Equipos Disponibles"
-                    value={summary?.equipos_disponibles || 0}
+                    title="Equipos en Uso"
+                    value={equiposEnUso}
                     icon={Laptop}
                     color="bg-green-500"
                     loading={loading}
                 />
                 <KPICard
-                    title="Stock Bajo"
-                    value={summary?.stock_bajo || 0}
-                    icon={AlertTriangle}
+                    title="En Reparación"
+                    value={equiposEnReparacion}
+                    icon={Settings}
                     color="bg-orange-500"
                     loading={loading}
                 />
                 <KPICard
                     title="Mantenimientos Próximos"
-                    value={summary?.mantenimientos_proximos || 0}
+                    value={equiposMantenimiento.length}
                     icon={Wrench}
                     color="bg-purple-500"
                     loading={loading}
@@ -155,29 +209,29 @@ const Dashboard = () => {
                     )}
                 </div>
 
-                {/* Equipos por Almacén */}
+                {/* Equipos por Estado */}
                 <div className="card">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Almacén</h3>
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Estado</h3>
                     {loading ? (
                         <div className="space-y-3">
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="h-8 bg-secondary-200 animate-pulse rounded"></div>
                             ))}
                         </div>
-                    ) : equiposPorAlmacen.length > 0 ? (
+                    ) : equiposPorEstado.length > 0 ? (
                         <div className="space-y-3">
-                            {equiposPorAlmacen.map((alm, idx) => (
+                            {equiposPorEstado.map((estado, idx) => (
                                 <div key={idx} className="flex items-center gap-3">
-                                    <Warehouse className="h-5 w-5 text-secondary-400" />
+                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(estado.estado)}`}></div>
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-medium text-secondary-700">{alm.almacen}</span>
-                                            <span className="text-sm font-bold text-secondary-900">{alm.cantidad}</span>
+                                            <span className="text-sm font-medium text-secondary-700">{getStatusLabel(estado.estado)}</span>
+                                            <span className="text-sm font-bold text-secondary-900">{estado.cantidad}</span>
                                         </div>
                                         <div className="w-full bg-secondary-200 rounded-full h-2">
                                             <div
-                                                className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                                                style={{ width: `${(alm.cantidad / Math.max(...equiposPorAlmacen.map(a => a.cantidad))) * 100}%` }}
+                                                className={`h-2 rounded-full transition-all duration-500 ${getStatusColor(estado.estado)}`}
+                                                style={{ width: `${(estado.cantidad / Math.max(...equiposPorEstado.map(e => e.cantidad))) * 100}%` }}
                                             ></div>
                                         </div>
                                     </div>
@@ -189,6 +243,133 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
+
+            {/* Valor del Inventario */}
+            {valorInventario.length > 0 && (
+                <div className="card">
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">💰 Valor Total del Inventario</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {valorInventario.map((item, idx) => (
+                            <div key={idx} className="p-4 bg-secondary-50 rounded-lg border border-secondary-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(item.estado)}`}></div>
+                                    <span className="text-sm font-medium text-secondary-700">{getStatusLabel(item.estado)}</span>
+                                </div>
+                                <p className="text-2xl font-bold text-secondary-900">{formatCurrency(item.valor_total)}</p>
+                                <p className="text-xs text-secondary-500 mt-1">{item.cantidad} equipos</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Alertas de Activos IT */}
+            {(equiposMantenimiento.length > 0 || garantiasVencer.length > 0 || equiposReparacion.length > 0 || asignacionesVencidas.length > 0) && (
+                <div className="card">
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-4 flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-orange-500" />
+                        Alertas de Activos IT
+                    </h3>
+
+                    {/* Mantenimientos Próximos */}
+                    {equiposMantenimiento.length > 0 && (
+                        <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-secondary-700 mb-2 flex items-center gap-2">
+                                <Wrench className="h-4 w-4 text-purple-600" />
+                                Mantenimientos Próximos (30 días)
+                            </h4>
+                            <div className="space-y-2">
+                                {equiposMantenimiento.map((equipo) => (
+                                    <div key={equipo.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                        <div>
+                                            <p className="text-sm font-medium text-secondary-900">{equipo.producto}</p>
+                                            <p className="text-xs text-secondary-500">S/N: {equipo.serial_number} • {equipo.tipo_mantenimiento}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-purple-600">{equipo.dias_restantes} días</p>
+                                            <p className="text-xs text-secondary-500">{formatDate(equipo.fecha_programada)}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Garantías por Vencer */}
+                    {garantiasVencer.length > 0 && (
+                        <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-secondary-700 mb-2 flex items-center gap-2">
+                                <Shield className="h-4 w-4 text-red-600" />
+                                Garantías por Vencer (60 días)
+                            </h4>
+                            <div className="space-y-2">
+                                {garantiasVencer.map((equipo) => (
+                                    <div key={equipo.id} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                                        <div>
+                                            <p className="text-sm font-medium text-secondary-900">{equipo.producto}</p>
+                                            <p className="text-xs text-secondary-500">S/N: {equipo.serial_number} • Valor: {formatCurrency(equipo.valor)}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-red-600">{equipo.dias_restantes} días</p>
+                                            <p className="text-xs text-secondary-500">{formatDate(equipo.fecha_vencimiento)}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Equipos en Reparación Prolongada */}
+                    {equiposReparacion.length > 0 && (
+                        <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-secondary-700 mb-2 flex items-center gap-2">
+                                <Settings className="h-4 w-4 text-orange-600" />
+                                Equipos en Reparación Prolongada (&gt;15 días)
+                            </h4>
+                            <div className="space-y-2">
+                                {equiposReparacion.map((equipo) => (
+                                    <div key={equipo.id} className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                        <div>
+                                            <p className="text-sm font-medium text-secondary-900">{equipo.producto}</p>
+                                            <p className="text-xs text-secondary-500">S/N: {equipo.serial_number} • {equipo.ubicacion || 'Sin ubicación'}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-orange-600">{equipo.dias_en_reparacion} días</p>
+                                            <p className="text-xs text-secondary-500">En reparación</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Asignaciones Vencidas */}
+                    {asignacionesVencidas.length > 0 && (
+                        <div>
+                            <h4 className="text-sm font-semibold text-secondary-700 mb-2 flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-blue-600" />
+                                Asignaciones Vencidas
+                            </h4>
+                            <div className="space-y-2">
+                                {asignacionesVencidas.map((asignacion) => (
+                                    <div key={asignacion.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div>
+                                            <p className="text-sm font-medium text-secondary-900">{asignacion.producto}</p>
+                                            <p className="text-xs text-secondary-500">
+                                                Asignado a: {asignacion.asignado_a} • {asignacion.departamento || 'Sin departamento'}
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-blue-600">{asignacion.dias_retraso} días</p>
+                                            <p className="text-xs text-secondary-500">de retraso</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Últimas Entradas y Asignaciones */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -254,58 +435,6 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
-
-            {/* Alertas */}
-            {(stockBajo.length > 0 || mantenimientos.length > 0) && (
-                <div className="card">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4 flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-orange-500" />
-                        Alertas
-                    </h3>
-
-                    {/* Stock Bajo */}
-                    {stockBajo.length > 0 && (
-                        <div className="mb-4">
-                            <h4 className="text-sm font-semibold text-secondary-700 mb-2">⚠️ Productos con Stock Bajo</h4>
-                            <div className="space-y-2">
-                                {stockBajo.map((producto) => (
-                                    <div key={producto.id} className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                                        <div>
-                                            <p className="text-sm font-medium text-secondary-900">{producto.producto}</p>
-                                            <p className="text-xs text-secondary-500">SKU: {producto.sku}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-bold text-orange-600">{producto.stock_actual} / {producto.stock_min}</p>
-                                            <p className="text-xs text-secondary-500">Faltan {producto.diferencia}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Mantenimientos Próximos */}
-                    {mantenimientos.length > 0 && (
-                        <div>
-                            <h4 className="text-sm font-semibold text-secondary-700 mb-2">🔧 Mantenimientos Próximos (30 días)</h4>
-                            <div className="space-y-2">
-                                {mantenimientos.map((mant) => (
-                                    <div key={mant.id} className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                                        <div>
-                                            <p className="text-sm font-medium text-secondary-900">{mant.producto}</p>
-                                            <p className="text-xs text-secondary-500">S/N: {mant.serial_number}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-bold text-purple-600">{mant.dias_restantes} días</p>
-                                            <p className="text-xs text-secondary-500">{new Date(mant.proximo_mantenimiento).toLocaleDateString('es-ES')}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 };

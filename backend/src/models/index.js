@@ -13,6 +13,11 @@ const MaintenanceItem = require('./MaintenanceItem');
 const InventoryMovement = require('./InventoryMovement');
 const AuditLog = require('./AuditLog');
 
+// Modelos de Activos IT
+const Asset = require('./Asset');
+const AssetAssignment = require('./AssetAssignment');
+const Maintenance = require('./Maintenance');
+
 // ========================================
 // RELACIONES DE MODELOS
 // ========================================
@@ -211,6 +216,43 @@ Supplier.hasMany(InventoryMovement, {
 });
 
 // ========================================
+// RELACIONES DE ACTIVOS IT
+// ========================================
+
+// Relación Asset-Product
+Asset.belongsTo(Product, {
+  foreignKey: 'product_id',
+  as: 'product'
+});
+
+Product.hasMany(Asset, {
+  foreignKey: 'product_id',
+  as: 'assets'
+});
+
+// Relación Asset-AssetAssignment
+Asset.hasMany(AssetAssignment, {
+  foreignKey: 'asset_id',
+  as: 'assignments'
+});
+
+AssetAssignment.belongsTo(Asset, {
+  foreignKey: 'asset_id',
+  as: 'asset'
+});
+
+// Relación Asset-Maintenance
+Asset.hasMany(Maintenance, {
+  foreignKey: 'asset_id',
+  as: 'maintenances'
+});
+
+Maintenance.belongsTo(Asset, {
+  foreignKey: 'asset_id',
+  as: 'asset'
+});
+
+// ========================================
 // EXPORTAR MODELOS
 // ========================================
 
@@ -226,5 +268,8 @@ module.exports = {
   MaintenanceOrder,
   MaintenanceItem,
   InventoryMovement,
-  AuditLog
+  AuditLog,
+  Asset,
+  AssetAssignment,
+  Maintenance
 };

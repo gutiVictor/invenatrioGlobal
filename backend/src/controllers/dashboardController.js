@@ -160,20 +160,200 @@ const getStockBajo = async (req, res) => {
 };
 
 /**
- * Obtener mantenimientos próximos
+ * Obtener equipos próximos a mantenimiento (30 días)
  */
-const getMantenimientosProximos = async (req, res) => {
+const getEquiposMantenimientoProximo = async (req, res) => {
   try {
-    // DESHABILITADO - columnas no existen
+    const [results] = await sequelize.query(`
+      SELECT 
+        m.id,
+        a.serial_number,
+        p.name as producto,
+        m.scheduled_date as fecha_programada,
+        m.type as tipo_mantenimiento,
+        (m.scheduled_date::date - CURRENT_DATE) as dias_restantes
+      FROM maintenances m
+      INNER JOIN assets a ON m.asset_id = a.id
+      INNER JOIN products p ON a.product_id = p.id
+      WHERE m.status = 'scheduled'
+        AND m.scheduled_date BETWEEN CURRENT_DATE AND (CURRENT_DATE + 30)
+      ORDER BY m.scheduled_date ASC
+      LIMIT 10
+    `);
+
     res.json({
       success: true,
-      data: []
+      data: results
     });
   } catch (error) {
-    console.error('Error getting mantenimientos proximos:', error);
+    console.error('Error getting equipos mantenimiento proximo:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al obtener mantenimientos próximos'
+      message: 'Error al obtener equipos próximos a mantenimiento'
+    });
+  }
+};
+
+/**
+ * Obtener garantías por vencer (60 días)
+ */
+const getGarantiasPorVencer = async (req, res) => {
+  try {
+    const [results] = await sequelize.query(`
+      SELECT 
+        a.id,
+        a.serial_number,
+        a.asset_tag,
+        p.name as producto,
+        a.warranty_expiry_date as fecha_vencimiento,
+        (a.warranty_expiry_date::date - CURRENT_DATE) as dias_restantes,
+        a.purchase_price as valor
+      FROM assets a
+      INNER JOIN products p ON a.product_id = p.id
+      WHERE a.warranty_expiry_date IS NOT NULL
+        AND a.warranty_expiry_date BETWEEN CURRENT_DATE AND (CURRENT_DATE + 60)
+        AND a.status NOT IN ('retired', 'disposed', 'stolen')
+      ORDER BY a.warranty_expiry_date ASC
+      LIMIT 10
+    `);
+
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error getting garantias por vencer:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener garantías por vencer'
+    });
+  }
+};
+
+/**
+ * Obtener equipos en reparación prolongada (>15 días)
+ */
+const getEquiposReparacionProlongada = async (req, res) => {
+  try {
+    const [results] = await sequelize.query(`
+      SELECT 
+        a.id,
+        a.serial_number,
+        a.asset_tag,
+        p.name as producto,
+        a.location as ubicacion,
+        (CURRENT_DATE - a.updated_at::date) as dias_en_reparacion,
+        a.notes as notas
+      FROM assets a
+      INNER JOIN products p ON a.product_id = p.id
+      WHERE a.status = 'under_repair'
+        AND a.updated_at::date < (CURRENT_DATE - 15)
+      ORDER BY a.updated_at ASC
+      LIMIT 10
+    `);
+
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error getting equipos reparacion prolongada:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener equipos en reparación prolongada'
+    });
+  }
+};
+
+/**
+ * Obtener asignaciones vencidas
+ */
+const getAsignacionesVencidas = async (req, res) => {
+  try {
+    const [results] = await sequelize.query(`
+      SELECT 
+        aa.id,
+        a.serial_number,
+        p.name as producto,
+        aa.assigned_to as asignado_a,
+        aa.department as departamento,
+        aa.expected_return_date as fecha_esperada,
+        (CURRENT_DATE - aa.expected_return_date::date) as dias_retraso
+      FROM asset_assignments aa
+      INNER JOIN assets a ON aa.asset_id = a.id
+      INNER JOIN products p ON a.product_id = p.id
+      WHERE aa.status = 'active'
+        AND aa.expected_return_date IS NOT NULL
+        AND aa.expected_return_date < CURRENT_DATE
+      ORDER BY aa.expected_return_date ASC
+      LIMIT 10
+    `);
+
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error getting asignaciones vencidas:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener asignaciones vencidas'
+    });
+  }
+};
+
+/**
+ * Obtener equipos por estado
+ */
+const getEquiposPorEstado = async (req, res) => {
+  try {
+    const [results] = await sequelize.query(`
+      SELECT 
+        a.status as estado,
+        COUNT(*) as cantidad
+      FROM assets a
+      GROUP BY a.status
+      ORDER BY cantidad DESC
+    `);
+
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error getting equipos por estado:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener equipos por estado'
+    });
+  }
+};
+
+/**
+ * Obtener valor total del inventario
+ */
+const getValorInventario = async (req, res) => {
+  try {
+    const [results] = await sequelize.query(`
+      SELECT 
+        a.status as estado,
+        COUNT(*) as cantidad,
+        COALESCE(SUM(a.purchase_price), 0) as valor_total
+      FROM assets a
+      WHERE a.purchase_price IS NOT NULL
+      GROUP BY a.status
+      ORDER BY valor_total DESC
+    `);
+
+    res.json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error getting valor inventario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener valor del inventario'
     });
   }
 };
@@ -253,7 +433,13 @@ module.exports = {
   getEquiposPorCategoria,
   getEquiposPorAlmacen,
   getStockBajo,
-  getMantenimientosProximos,
+  getEquiposMantenimientoProximo,
+  getGarantiasPorVencer,
+  getEquiposReparacionProlongada,
+  getAsignacionesVencidas,
+  getEquiposPorEstado,
+  getValorInventario,
   getUltimasEntradas,
   getUltimasAsignaciones
 };
+
