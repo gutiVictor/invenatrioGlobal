@@ -73,12 +73,12 @@ const getEquiposPorCategoria = async (req, res) => {
     const [results] = await sequelize.query(`
       SELECT 
         c.name as categoria,
-        COALESCE(SUM(pw.stock), 0) as cantidad
+        COUNT(a.id) as cantidad
       FROM categories c
-      LEFT JOIN products p ON c.id = p.category_id AND p.active = true
-      LEFT JOIN product_warehouse pw ON p.id = pw.product_id
+      INNER JOIN products p ON c.id = p.category_id
+      INNER JOIN assets a ON p.id = a.product_id
+      WHERE a.status NOT IN ('retired', 'disposed', 'stolen')
       GROUP BY c.id, c.name
-      HAVING COALESCE(SUM(pw.stock), 0) > 0
       ORDER BY cantidad DESC
     `);
 
