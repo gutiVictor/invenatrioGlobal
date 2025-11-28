@@ -3,6 +3,8 @@ import { Package, AlertTriangle, Wrench, TrendingUp, Warehouse, Laptop, Clock, S
 import api from '../services/api';
 
 import { useNavigate } from 'react-router-dom';
+import DoughnutChart from '../components/Dashboard/DoughnutChart';
+import BarChart from '../components/Dashboard/BarChart';
 
 const KPICard = ({ title, value, icon: Icon, color, loading, onClick }) => (
     <div
@@ -185,74 +187,49 @@ const Dashboard = () => {
                 />
             </div>
 
-            {/* Charts Row */}
+            {/* Charts Row - With Visual Graphics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Equipos por Categoría */}
-                <div className="card">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Categoría</h3>
-                    {loading ? (
-                        <div className="space-y-3">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-8 bg-secondary-200 animate-pulse rounded"></div>
-                            ))}
-                        </div>
-                    ) : equiposPorCategoria.length > 0 ? (
-                        <div className="space-y-3">
-                            {equiposPorCategoria.map((cat, idx) => (
-                                <div key={idx} className="flex items-center gap-3">
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-medium text-secondary-700">{cat.categoria}</span>
-                                            <span className="text-sm font-bold text-secondary-900">{cat.cantidad}</span>
-                                        </div>
-                                        <div className="w-full bg-secondary-200 rounded-full h-2">
-                                            <div
-                                                className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                                                style={{ width: `${(cat.cantidad / Math.max(...equiposPorCategoria.map(c => c.cantidad))) * 100}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
+                {/* Equipos por Categoría - Gráfica de Barras */}
+                {loading ? (
+                    <div className="card">
+                        <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Categoría</h3>
+                        <div className="h-64 bg-secondary-200 animate-pulse rounded"></div>
+                    </div>
+                ) : equiposPorCategoria.length > 0 ? (
+                    <BarChart
+                        title="Equipos por Categoría"
+                        data={{
+                            labels: equiposPorCategoria.map(cat => cat.categoria),
+                            values: equiposPorCategoria.map(cat => cat.cantidad)
+                        }}
+                    />
+                ) : (
+                    <div className="card">
+                        <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Categoría</h3>
                         <p className="text-sm text-secondary-500 text-center py-8">No hay datos disponibles</p>
-                    )}
-                </div>
+                    </div>
+                )}
 
-                {/* Equipos por Estado */}
-                <div className="card">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Estado</h3>
-                    {loading ? (
-                        <div className="space-y-3">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-8 bg-secondary-200 animate-pulse rounded"></div>
-                            ))}
-                        </div>
-                    ) : equiposPorEstado.length > 0 ? (
-                        <div className="space-y-3">
-                            {equiposPorEstado.map((estado, idx) => (
-                                <div key={idx} className="flex items-center gap-3">
-                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(estado.estado)}`}></div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-medium text-secondary-700">{getStatusLabel(estado.estado)}</span>
-                                            <span className="text-sm font-bold text-secondary-900">{estado.cantidad}</span>
-                                        </div>
-                                        <div className="w-full bg-secondary-200 rounded-full h-2">
-                                            <div
-                                                className={`h-2 rounded-full transition-all duration-500 ${getStatusColor(estado.estado)}`}
-                                                style={{ width: `${(estado.cantidad / Math.max(...equiposPorEstado.map(e => e.cantidad))) * 100}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
+                {/* Equipos por Estado - Gráfica de Dona */}
+                {loading ? (
+                    <div className="card">
+                        <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Estado</h3>
+                        <div className="h-64 bg-secondary-200 animate-pulse rounded"></div>
+                    </div>
+                ) : equiposPorEstado.length > 0 ? (
+                    <DoughnutChart
+                        title="Equipos por Estado"
+                        data={{
+                            labels: equiposPorEstado.map(estado => getStatusLabel(estado.estado)),
+                            values: equiposPorEstado.map(estado => estado.cantidad)
+                        }}
+                    />
+                ) : (
+                    <div className="card">
+                        <h3 className="text-lg font-semibold text-secondary-900 mb-4">Equipos por Estado</h3>
                         <p className="text-sm text-secondary-500 text-center py-8">No hay datos disponibles</p>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             {/* Valor del Inventario */}
