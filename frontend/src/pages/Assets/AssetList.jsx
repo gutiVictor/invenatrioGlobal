@@ -11,6 +11,8 @@ const AssetList = () => {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState(null);
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '');
@@ -48,6 +50,8 @@ const AssetList = () => {
 
     const handleOpenAssignModal = (asset) => {
         setSelectedAsset(asset);
+        setSelectedAssignment(null);
+        setIsEditMode(false);
         setIsModalOpen(true);
     };
 
@@ -59,6 +63,27 @@ const AssetList = () => {
             alert('Activo asignado correctamente');
         } catch (err) {
             alert('Error al asignar el activo');
+        }
+    };
+
+    const handleOpenEditModal = (asset) => {
+        const activeAssignment = asset.assignments?.find(a => a.status === 'active');
+        if (activeAssignment) {
+            setSelectedAsset(asset);
+            setSelectedAssignment(activeAssignment);
+            setIsEditMode(true);
+            setIsModalOpen(true);
+        }
+    };
+
+    const handleUpdateAssignment = async (assignmentId, data) => {
+        try {
+            await assetService.updateAssignment(assignmentId, data);
+            setIsModalOpen(false);
+            fetchAssets();
+            alert('Asignación actualizada correctamente');
+        } catch (err) {
+            alert('Error al actualizar la asignación');
         }
     };
 
@@ -176,6 +201,7 @@ const AssetList = () => {
                                 assets={filteredAssets}
                                 onDelete={handleDelete}
                                 onAssign={handleOpenAssignModal}
+                                onEditAssignment={handleOpenEditModal}
                                 onReturn={handleReturn}
                             />
                         </div>
@@ -187,7 +213,10 @@ const AssetList = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onAssign={handleAssign}
+                onUpdate={handleUpdateAssignment}
                 asset={selectedAsset}
+                assignment={selectedAssignment}
+                isEditMode={isEditMode}
             />
         </div>
     );

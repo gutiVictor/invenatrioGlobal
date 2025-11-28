@@ -41,6 +41,12 @@ const assetService = {
   returnAsset: async (id, data) => {
     const response = await api.post(`/assets/${id}/return`, data);
     return response.data;
+  },
+
+  // Update existing assignment
+  updateAssignment: async (assignmentId, data) => {
+    const response = await api.put(`/assets/assignments/${assignmentId}`, data);
+    return response.data;
   }
 };
 

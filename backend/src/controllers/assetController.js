@@ -227,7 +227,18 @@ const deleteAsset = async (req, res) => {
 const assignAsset = async (req, res) => {
   try {
     const { id } = req.params;
-    const { assigned_to, department, expected_return_date, condition_on_assign } = req.body;
+    const { 
+      assigned_to, 
+      employee_id,
+      employee_email,
+      employee_phone,
+      job_title,
+      department, 
+      physical_location,
+      expected_return_date, 
+      condition_on_assign,
+      notes
+    } = req.body;
 
     const asset = await Asset.findByPk(id);
     if (!asset) {
@@ -238,14 +249,24 @@ const assignAsset = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Asset is already in use' });
     }
 
+    // Get current user from auth middleware (if available)
+    const assigned_by = req.user ? req.user.name || req.user.email : null;
+
     // Create assignment
     await AssetAssignment.create({
       asset_id: id,
       assigned_to,
+      employee_id,
+      employee_email,
+      employee_phone,
+      job_title,
       department,
+      physical_location,
       assigned_date: new Date(),
       expected_return_date,
       condition_on_assign,
+      notes,
+      assigned_by,
       status: 'active'
     });
 
@@ -301,6 +322,64 @@ const returnAsset = async (req, res) => {
   }
 };
 
+/**
+ * Update an existing assignment
+ */
+const updateAssignment = async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    const {
+      assigned_to,
+      employee_id,
+      employee_email,
+      employee_phone,
+      job_title,
+      department,
+      physical_location,
+      expected_return_date,
+      notes
+    } = req.body;
+
+    const assignment = await AssetAssignment.findByPk(assignmentId);
+    
+    if (!assignment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Assignment not found' 
+      });
+    }
+
+    if (assignment.status !== 'active') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Can only edit active assignments' 
+      });
+    }
+
+    // Update assignment
+    await assignment.update({
+      assigned_to,
+      employee_id,
+      employee_email,
+      employee_phone,
+      job_title,
+      department,
+      physical_location,
+      expected_return_date,
+      notes
+    });
+
+    res.json({ 
+      success: true, 
+      data: assignment, 
+      message: 'Assignment updated successfully' 
+    });
+  } catch (error) {
+    console.error('Error updating assignment:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 module.exports = {
   getAllAssets,
   getAssetById,
@@ -308,5 +387,6 @@ module.exports = {
   updateAsset,
   deleteAsset,
   assignAsset,
-  returnAsset
+  returnAsset,
+  updateAssignment
 };

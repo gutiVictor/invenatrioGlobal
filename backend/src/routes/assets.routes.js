@@ -15,5 +15,6 @@ router.delete('/:id', assetController.deleteAsset);
 // Custom actions
 router.post('/:id/assign', assetController.assignAsset);
 router.post('/:id/return', assetController.returnAsset);
+router.put('/assignments/:assignmentId', assetController.updateAssignment);
 
 module.exports = router;
